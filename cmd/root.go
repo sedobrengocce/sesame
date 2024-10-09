@@ -10,10 +10,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-
+const version = "0.0.1"
 
 var rootCmd = &cobra.Command{
 	Use:   "sesame",
+    Version: version,
 	Short: "A simple port knocking tool",
 	Long: `Sesame is a simple port knocking tool 
     that allows you to open ports on a remote server
@@ -25,15 +26,6 @@ var rootCmd = &cobra.Command{
         // TODO: Implement TUI
         fmt.Println("TUI not implemented yet")
     },
-}
-
-var versionCmd = &cobra.Command{
-  Use:   "version",
-  Short: "Print the version number of Sesame",
-  Long:  `Print the version number of Sesame`,
-  Run: func(cmd *cobra.Command, args []string) {
-    fmt.Println("Sesame knocking tool v0.0")
-  },
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -55,6 +47,6 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	// rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-    rootCmd.AddCommand(versionCmd)
+    rootCmd.SetVersionTemplate("Sesame version: {{.Version}}\n")
 }
 

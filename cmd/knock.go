@@ -12,6 +12,7 @@ var (
     sequence []int
     delay int
     udp bool
+    verbose bool
 )
 
 func init() {
@@ -20,6 +21,7 @@ func init() {
   knockCmd.Flags().IntSliceVarP(&sequence, "ports", "p", []int{}, "sequence of ports to knock")
   knockCmd.Flags().IntVarP(&delay, "delay", "d", 10, "delay between knocks")
   knockCmd.Flags().BoolVarP(&udp, "udp", "u", false, "use UDP instead of TCP")
+  knockCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
   knockCmd.MarkFlagRequired("ports")
   knockCmd.MarkFlagRequired("host")
 }
@@ -33,6 +35,7 @@ var knockCmd = &cobra.Command{
         knocker := knocker.NewKnocker(host)
         knocker.WithDelay(delay)
         knocker.WithUdp(udp)
+        knocker.WithVerbose(verbose)
         err := knocker.WithSequence(sequence)
         if err != nil {
             fmt.Println(err)

@@ -14,6 +14,7 @@ type Knocker struct {
     sequence []port.Port
     delay int
     udp bool
+    verbose bool
 }
 
 func NewKnocker(host string) *Knocker {
@@ -22,6 +23,7 @@ func NewKnocker(host string) *Knocker {
         sequence: []port.Port{},  
         delay: 10,
         udp: false,
+        verbose: false,
     }
 }
 
@@ -49,13 +51,20 @@ func (k *Knocker) WithUdp(udp bool) {
     k.udp = udp
 }
 
+func (k *Knocker) WithVerbose(verbose bool) {
+    k.verbose = verbose
+}
+
 func (k *Knocker) Knock() error {
     packetType := "tcp"
     if k.udp {
         packetType = "udp"
     }
+    fmt.Printf("Sesame ...")
     for _, p := range k.sequence {
-        fmt.Printf("Knocking on %s:%d with %s\n", k.host, p.Number(), packetType)
+        if k.verbose {
+            fmt.Printf("Knocking on %s:%d with %s\n", k.host, p.Number(), packetType)
+        }
         target := fmt.Sprintf("%s:%d", k.host, p.Number())
         conn, err := net.DialTimeout(packetType, target, 500 * time.Millisecond)
         if err != nil {
@@ -68,6 +77,8 @@ func (k *Knocker) Knock() error {
         }
         time.Sleep(time.Duration(k.delay) * time.Millisecond)
     }
+    fmt.Println("... open your self!")
+
     return nil
 }
 

@@ -56,11 +56,16 @@ func (k *Knocker) Knock() error {
     }
     for _, p := range k.sequence {
         fmt.Printf("Knocking on %s:%d with %s\n", k.host, p.Number(), packetType)
-        conn, err := net.DialTimeout(packetType, fmt.Sprintf("%s:%d", k.host, p.Number()), 1 * time.Millisecond)
+        target := fmt.Sprintf("%s:%d", k.host, p.Number())
+        conn, err := net.DialTimeout(packetType, target, 500 * time.Millisecond)
         if err != nil {
-            return err
+            e := err.(net.Error)
+            if !e.Timeout() {
+                return err
+            }
+        } else {
+            defer conn.Close()
         }
-        defer conn.Close()
         time.Sleep(time.Duration(k.delay) * time.Millisecond)
     }
     return nil

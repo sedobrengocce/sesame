@@ -18,3 +18,7 @@ func NewPort(number int) (*Port, error) {
 func (p *Port) Number() int {
     return p.number
 }
+
+func (p *Port) String() string {
+    return string(p.number)
+}

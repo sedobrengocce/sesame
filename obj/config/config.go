@@ -4,7 +4,6 @@ import (
 	"os"
 	"sync"
 
-	"github.com/sedobrengocce/sesame/obj/configDefaults"
 	"gopkg.in/yaml.v3"
 )
 
@@ -19,18 +18,18 @@ type Config struct {
 var once sync.Once
 var instance *Config
 
-func Get() (*Config, error) {
+func Get(cfgPath string) (*Config, error) {
     var err error = nil
     once.Do(func() {
-        file, e := os.Open(configdefaults.ConfigPath)
+        yamlfile, e := os.ReadFile(cfgPath)
         if e != nil {
             err = e
             return
         }
-        defer file.Close()
-        decoder := yaml.NewDecoder(file)
-        err = decoder.Decode(instance)
-        instance = &Config{}
+        err = yaml.Unmarshal(yamlfile, &instance)
+        if err != nil {
+            return
+        }
     })
     return instance, err
 }

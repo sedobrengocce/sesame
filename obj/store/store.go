@@ -3,9 +3,11 @@ package store
 import (
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
-	"strconv"
+
+	"gopkg.in/yaml.v3"
 )
 
 type Store struct {
@@ -28,25 +30,29 @@ func (s *Store) Save(name, host string, sequence []int, delay int, udp bool) {
             fmt.Println("Error: sequence already exists")
             return
         } else if errors.Is(err, os.ErrNotExist) {
-            file, err := os.Create(filepath.Join(s.storePath, fmt.Sprintf("%s.yaml", name)))
+            seq := make(map[string]interface{})
+            seq["name"] = name
+            seq["host"] = host
+            seq["ports"] = sequence
+            seq["delay"] = delay
+            seq["udp"] = udp
+            fmt.Println(seq)
+            yamlData, err := yaml.Marshal(&seq)
             if err != nil {
-                fmt.Println("Error: creating the sequence file")
+                fmt.Println("Error: failed to marshal sequence")
+                return
+            }
+            fmt.Println(string(yamlData))
+            file, err := os.Create(filepath.Join(s.storePath, name + ".yaml"))
+            if err != nil {
+                fmt.Println("Error: failed to create sequence file")
                 return
             }
             defer file.Close()
-            file.WriteString("---\n")
-            file.WriteString("host: "+ host + "\n")
-            file.WriteString("sequence:\n")
-            for _, s := range sequence {
-                port := strconv.Itoa(s)
-                file.WriteString("  - " + port + "\n")
-            }
-            delayStr := strconv.Itoa(delay)
-            file.WriteString("delay: " + delayStr + "\n")
-            if udp {
-                file.WriteString("udp: " + "true" + "\n")
-            } else {
-                file.WriteString("udp: " + "false" + "\n")
+            _, err = io.WriteString(file, string(yamlData))
+            if err != nil {
+                fmt.Println("Error: failed to write sequence to file")
+                return
             }
         } else {
             fmt.Println("Error: store or keys not found")

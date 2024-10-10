@@ -10,9 +10,9 @@ import (
 var (
     host string
     sequence []int
-    delay int
-    udp bool
-    verbose bool
+    delay int = 10
+    udp bool = false
+    verbose bool = false
 )
 
 func init() {

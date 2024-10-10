@@ -1,9 +1,12 @@
 package port
 
-import "errors"
+import (
+	"errors"
+	"strconv"
+)
 
 type Port struct {
-    number int
+    number int `yaml:"number"`
 }
 
 func NewPort(number int) (*Port, error) {
@@ -20,5 +23,5 @@ func (p *Port) Number() int {
 }
 
 func (p *Port) String() string {
-    return string(p.number)
+    return strconv.Itoa(p.number)
 }

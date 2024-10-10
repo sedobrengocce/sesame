@@ -10,10 +10,10 @@ import (
 )
 
 type Knocker struct {
-    host string
-    sequence []port.Port
-    delay int
-    udp bool
+    host string `yaml:"host"`
+    sequence []port.Port `yaml:"sequence"`
+    delay int `yaml:"delay"`
+    udp bool `yaml:"udp"`
     verbose bool
 }
 

@@ -60,7 +60,7 @@ func (k *Knocker) Knock() error {
     if k.udp {
         packetType = "udp"
     }
-    fmt.Printf("Sesame ...")
+    fmt.Printf("Sesame ...\n")
     for _, p := range k.sequence {
         if k.verbose {
             fmt.Printf("Knocking on %s:%d with %s\n", k.host, p.Number(), packetType)

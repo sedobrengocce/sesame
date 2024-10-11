@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/sedobrengocce/sesame/obj/knocker"
 	"gopkg.in/yaml.v3"
 )
 
@@ -41,7 +42,19 @@ func (s *Store) Load(name string, verbose bool) {
                 return
             }
             fmt.Println("Sequence loaded")
-            fmt.Println(seq)
+            host := seq["host"].(string)
+            sequence := []int{}
+            for _, s := range seq["ports"].([]interface{}) {
+                sequence = append(sequence, int(s.(int)))
+            }
+            delay := seq["delay"].(int)
+            udp := seq["udp"].(bool)
+            k := knocker.NewKnocker(host)
+            k.WithSequence(sequence)
+            k.WithDelay(delay)
+            k.WithUdp(udp)
+            k.WithVerbose(verbose)
+            k.Knock()
         } else if errors.Is(err, os.ErrNotExist) {
             fmt.Println("Error: sequence not found")
         } else {

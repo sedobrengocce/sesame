@@ -23,6 +23,10 @@ func init() {
   saveCmd.MarkFlagRequired("ports")
   saveCmd.MarkFlagRequired("host")
   saveCmd.MarkFlagRequired("name")
+
+  loadCmd.Flags().StringVarP(&name, "name", "n", "", "name of the sequence")
+  loadCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "show the sequence")
+  loadCmd.MarkFlagRequired("name")
 }
 
 var storeCmd = &cobra.Command{
@@ -43,5 +47,20 @@ var saveCmd = &cobra.Command{
         }
         s := store.NewStore(cfg.Paths.StorePath, cfg.Paths.PubKeyPath, cfg.Paths.PrivKeyPath)
         s.Save(name, host, sequence, delay, udp)
+    },
+}
+
+var loadCmd = &cobra.Command{
+    Use:   "Load",
+    Short: "Load a sequence",
+    Long: `Load a sequence in the store and knock it if it exists`,
+    Run: func(cmd *cobra.Command, args []string) {
+        cfg, err := config.Get()
+        if err != nil {
+            fmt.Printf("Error getting the config: %v\n", err)
+            panic(err)
+        }
+        s := store.NewStore(cfg.Paths.StorePath, cfg.Paths.PubKeyPath, cfg.Paths.PrivKeyPath)
+        s.Load(name, verbose)
     },
 }

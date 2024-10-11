@@ -18,8 +18,21 @@ func NewStore(storePath, pubKeyPath, privKeyPath string) *Store {
     return &Store{storePath: storePath, pubKeyPath: pubKeyPath, privKeyPath: privKeyPath}
 }
 
-func (s *Store) Load() {
-    // Load the store
+func (s *Store) Load(name string, verbose bool) {
+    if checkStore(s.storePath) && checkKey(s.pubKeyPath, s.privKeyPath) {
+        if _, err := os.Stat(filepath.Join(s.storePath, name)); err == nil {
+            fmt.Println("Sequence found")
+            if verbose {
+                fmt.Println("Verbose output")
+            }
+        } else if errors.Is(err, os.ErrNotExist) {
+            fmt.Println("Error: sequence not found")
+        } else {
+            fmt.Println("Error: store or keys not found")
+        }
+    } else {
+        fmt.Println("Error: store or keys not found")
+    }
 }
 
 func (s *Store) Save(name, host string, sequence []int, delay int, udp bool) {
@@ -53,6 +66,8 @@ func (s *Store) Save(name, host string, sequence []int, delay int, udp bool) {
             return
         }
         fmt.Println("Sequence saved")
+    } else {
+        fmt.Println("Error: store or keys not found")
     }
 }
 

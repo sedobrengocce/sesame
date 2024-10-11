@@ -1,6 +1,7 @@
 package knocker
 
 import (
+	"math/rand"
 	"errors"
 	"fmt"
 	"net"
@@ -15,6 +16,7 @@ type Knocker struct {
     delay int `yaml:"delay"`
     udp bool `yaml:"udp"`
     verbose bool
+    fake bool
 }
 
 func NewKnocker(host string) *Knocker {
@@ -24,6 +26,7 @@ func NewKnocker(host string) *Knocker {
         delay: 10,
         udp: false,
         verbose: false,
+        fake: false,
     }
 }
 
@@ -55,15 +58,39 @@ func (k *Knocker) WithVerbose(verbose bool) {
     k.verbose = verbose
 }
 
+func (k *Knocker) WithFake(fake bool) {
+    k.fake = fake
+}
+
 func (k *Knocker) Knock() error {
     packetType := "tcp"
     if k.udp {
         packetType = "udp"
     }
     fmt.Printf("Sesame ...\n")
+    host := k.host
+    sequence := []int{}
     for _, p := range k.sequence {
-        if k.verbose {
-            fmt.Printf("Knocking on %s:%d with %s\n", k.host, p.Number(), packetType)
+        sequence = append(sequence, p.Number())
+    }
+    verbPacketType := packetType
+    if k.fake {
+        r := rand.New(rand.NewSource(time.Now().UnixNano()))
+        host = fmt.Sprintf("%d.%d.%d.%d", r.Intn(254), r.Intn(254), r.Intn(254), r.Intn(254))
+        l := len(k.sequence)
+        sequence = []int{}
+        for i := 0; i < l; i++ {
+            sequence = append(sequence, r.Intn(65535))
+        }
+        if rand.Intn(1) == 0 {
+            verbPacketType = "tcp"
+        } else {
+            verbPacketType = "udp"
+        }
+    }
+    for i, p := range k.sequence {
+        if k.verbose || k.fake {
+            fmt.Printf("Knocking on %s:%d with %s\n", host, sequence[i], verbPacketType)
         }
         target := fmt.Sprintf("%s:%d", k.host, p.Number())
         conn, err := net.DialTimeout(packetType, target, 500 * time.Millisecond)

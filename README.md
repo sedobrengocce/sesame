@@ -61,11 +61,11 @@ go build -o sesame main.go
 The list of the ports are coma separated. 
 
 ## To Do
-- [ ] Use database to store data (crypted)
+- [ ] Use database to store data (crypted) (Woring on it)
 - [ ] Add a TUI
 - [ ] Add a GUI
 - [ ] Add a git integration to sync data
-- [ ] Add a fake verbose mode to hide data
+- [X] Add a fake verbose mode to hide data
 - [ ] Add Makefile to build and install the project
 
 ## License

@@ -21,6 +21,7 @@ func init() {
     saveCmd.MarkFlagRequired("ports")
 
     loadCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "show the sequence")
+    loadCmd.Flags().BoolVarP(&fake, "fake", "f", false, "fake verbose output")
 }
 
 var storeCmd = &cobra.Command{
@@ -72,7 +73,7 @@ var loadCmd = &cobra.Command{
         }
         name := args[0] + ".yaml"
         s := store.NewStore(cfg.Paths.StorePath, cfg.Paths.PubKeyPath, cfg.Paths.PrivKeyPath)
-        s.Load(name, verbose)
+        s.Load(name, verbose, fake)
     },
 }
 

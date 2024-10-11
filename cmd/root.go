@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const version = "0.1.1"
+const version = "0.2.0"
 
 var rootCmd = &cobra.Command{
 	Use:   "sesame",
@@ -23,8 +23,8 @@ var rootCmd = &cobra.Command{
     sequences on a crypted database to improve the
     security of the sequences.`,
 	Run: func(cmd *cobra.Command, args []string) {
-        // TODO: Implement TUI
-        fmt.Println("TUI not implemented yet")
+        // TODO: Implement GUI
+        fmt.Println("GUI not implemented yet")
         fmt.Println("Please run sesame -h for help")
     },
 }

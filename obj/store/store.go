@@ -49,14 +49,12 @@ func (s *Store) Save(name, host string, sequence []int, delay int, udp bool) {
             seq["ports"] = sequence
             seq["delay"] = delay
             seq["udp"] = udp
-            fmt.Println(seq)
             yamlData, err := yaml.Marshal(&seq)
             if err != nil {
                 fmt.Println("Error: failed to marshal sequence")
                 return
             }
-            fmt.Println(string(yamlData))
-            file, err := os.Create(filepath.Join(s.storePath, name + ".yaml"))
+            file, err := os.Create(filepath.Join(s.storePath, name))
             if err != nil {
                 fmt.Println("Error: failed to create sequence file")
                 return

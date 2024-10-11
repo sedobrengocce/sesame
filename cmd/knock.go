@@ -8,7 +8,6 @@ import (
 )
 
 var (
-    host string
     sequence []int
     delay int = 10
     udp bool = false
@@ -17,21 +16,25 @@ var (
 
 func init() {
   rootCmd.AddCommand(knockCmd)
-  knockCmd.Flags().StringVarP(&host, "host", "H", "", "host to knock")
   knockCmd.Flags().IntSliceVarP(&sequence, "ports", "p", []int{}, "sequence of ports to knock")
   knockCmd.Flags().IntVarP(&delay, "delay", "d", 10, "delay between knocks")
   knockCmd.Flags().BoolVarP(&udp, "udp", "u", false, "use UDP instead of TCP")
   knockCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
   knockCmd.MarkFlagRequired("ports")
-  knockCmd.MarkFlagRequired("host")
 }
 
 var knockCmd = &cobra.Command{
-    Use:   "knock",
+    Use:   "knock [host]",
+    Args: cobra.ExactArgs(1),
     Short: "knock a seqence to an host",
     Long: `knock a sequence to an host you 
     can specify the sequence and the host`,
     Run: func(cmd *cobra.Command, args []string) {
+        if args[0] == "" {
+            fmt.Println("Error: no host provided")
+            return
+        }
+        host := args[0]
         knocker := knocker.NewKnocker(host)
         knocker.WithDelay(delay)
         knocker.WithUdp(udp)

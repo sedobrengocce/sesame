@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sedobrengocce/sesame/obj/config"
+	"github.com/sedobrengocce/sesame/obj/configDefaults"
 	"github.com/sedobrengocce/sesame/obj/store"
 	"github.com/spf13/cobra"
 )
@@ -40,7 +41,7 @@ var saveCmd = &cobra.Command{
     Short: "Save a sequence",
     Long: `Save a sequence in the store if it doesn't exist`,
     Run: func(cmd *cobra.Command, args []string) {
-        cfg, err := config.Get()
+        cfg, err := config.Get(configdefaults.ConfigPath)
         if err != nil {
             fmt.Printf("Error getting the config: %v\n", err)
             panic(err)

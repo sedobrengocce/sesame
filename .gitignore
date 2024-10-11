@@ -27,3 +27,4 @@ go.work.sum
 # Binary file
 bin/
 notification.json
+testFiles/

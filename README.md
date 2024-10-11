@@ -11,7 +11,7 @@
    - [To Do](#to-do)
    - [License](#license)
    - [Contacts](#contacts)
-   - [Change Log](https://github.com/seDobrengocce/sesame/blob/main/CHANGELOG.md)
+   - [Change Log](https://github.com/seDobrengocce/sesame/blob/main/CHANGELOG/CHANGELOG.md)
 
 ## About the Project
 

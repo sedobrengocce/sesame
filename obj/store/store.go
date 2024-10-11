@@ -6,7 +6,6 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"syscall"
 
 	"github.com/ProtonMail/gopenpgp/v3/crypto"
 	"github.com/sedobrengocce/sesame/obj/knocker"
@@ -39,7 +38,7 @@ func (s *Store) Load(name string, verbose, fake bool) {
                 return
             }
             fmt.Print("Enter passphrase: ")
-            passphrase, err := term.ReadPassword(syscall.Stdin)
+            passphrase, err := term.ReadPassword(int(os.Stdin.Fd()))
             if err != nil {
                 fmt.Println("Error: failed to read passphrase")
                 return

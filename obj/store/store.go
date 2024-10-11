@@ -23,10 +23,25 @@ func NewStore(storePath, pubKeyPath, privKeyPath string) *Store {
 func (s *Store) Load(name string, verbose bool) {
     if checkStore(s.storePath) && checkKey(s.pubKeyPath, s.privKeyPath) {
         if _, err := os.Stat(filepath.Join(s.storePath, name)); err == nil {
-            fmt.Println("Sequence found")
-            if verbose {
-                fmt.Println("Verbose output")
+            file, err := os.Open(filepath.Join(s.storePath, name))
+            if err != nil {
+                fmt.Println("Error: failed to open sequence file")
+                return
             }
+            defer file.Close()
+            seq := make(map[string]interface{})
+            yamlData, err := io.ReadAll(file)
+            if err != nil {
+                fmt.Println("Error: failed to read sequence file")
+                return
+            }
+            err = yaml.Unmarshal(yamlData, &seq)
+            if err != nil {
+                fmt.Println("Error: failed to unmarshal sequence")
+                return
+            }
+            fmt.Println("Sequence loaded")
+            fmt.Println(seq)
         } else if errors.Is(err, os.ErrNotExist) {
             fmt.Println("Error: sequence not found")
         } else {

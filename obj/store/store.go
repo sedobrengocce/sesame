@@ -1,13 +1,17 @@
 package store
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
+	"github.com/ProtonMail/gopenpgp/v3/constants"
 	"github.com/ProtonMail/gopenpgp/v3/crypto"
+	"github.com/ProtonMail/gopenpgp/v3/profile"
 	"github.com/sedobrengocce/sesame/obj/knocker"
 	"golang.org/x/term"
 	"gopkg.in/yaml.v3"
@@ -178,7 +182,61 @@ func (s *Store) Delete() {
 }
 
 func (s *Store) GenerateKeys() {
-    // TODO: Generate the keys
+    if checkKey(s.pubKeyPath, s.privKeyPath) {
+        fmt.Println("Error: Store already initialized")
+        return
+    }
+    pgp := crypto.PGPWithProfile(profile.RFC4880())
+    reader := bufio.NewReader(os.Stdin)
+    fmt.Print("Enter your name: ")
+    name, _ := reader.ReadString('\n')
+    name = strings.TrimSuffix(name, "\n")
+    fmt.Print("Enter your email: ")
+    email, _ := reader.ReadString('\n')
+    email = strings.TrimSuffix(email, "\n")
+    genHandle := pgp.KeyGeneration().
+        AddUserId(name, email).
+        New()
+    key, err := genHandle.GenerateKeyWithSecurity(constants.HighSecurity)
+    if err != nil {
+        fmt.Println("Error: failed to generate keys")
+        return
+    }
+    fmt.Print("Enter passphrase: ")
+    passphrase, err := term.ReadPassword(int(os.Stdin.Fd()))
+    pgp.LockKey(key, passphrase)
+    pubKey, err := key.GetArmoredPublicKey()
+    if err != nil {
+        fmt.Println("Error: failed to get armored public key")
+        return
+    }
+    privKey, err := key.Armor()
+    if err != nil {
+        fmt.Println("Error: failed to get armored private key")
+        return
+    }
+    pubKeyFile, err := os.Create(s.pubKeyPath)
+    if err != nil {
+        fmt.Println("Error: failed to create public key")
+        return
+    }
+    defer pubKeyFile.Close()
+    _, err = io.WriteString(pubKeyFile, pubKey)
+    if err != nil {
+        fmt.Println("Error: failed to write public key")
+        return
+    }
+    privKeyFile, err := os.Create(s.privKeyPath)
+    if err != nil {
+        fmt.Println("Error: failed to create private key")
+        return
+    }
+    defer privKeyFile.Close()
+    _, err = io.WriteString(privKeyFile, privKey)
+    if err != nil {
+        fmt.Println("Error: failed to write private key")
+        return
+    }
 }
 
 func (s *Store) SetKeys(pubKeyPath, privKeyPath string) {

@@ -14,6 +14,7 @@ func init() {
     storeCmd.AddCommand(saveCmd)
     storeCmd.AddCommand(loadCmd)
     storeCmd.AddCommand(setKeyCmd)
+    storeCmd.AddCommand(storeInitCmd)
 
     saveCmd.Flags().IntSliceVarP(&sequence, "ports", "p", []int{}, "sequence of ports to knock")
     saveCmd.Flags().IntVarP(&delay, "delay", "d", 10, "delay between knocks")
@@ -103,3 +104,17 @@ var setKeyCmd = &cobra.Command{
     },
 }
 
+var storeInitCmd = &cobra.Command{
+    Use:   "init",
+    Short: "Initialize the store",
+    Long: `Initialize the store generating the public and private keys`,
+    Run: func(cmd *cobra.Command, args []string) {
+        cfg, err := config.Get(configdefaults.ConfigPath)
+        if err != nil {
+            fmt.Printf("Error getting the config: %v\n", err)
+            panic(err)
+        }
+        s := store.NewStore(cfg.Paths.StorePath, cfg.Paths.PubKeyPath, cfg.Paths.PrivKeyPath)
+        s.GenerateKeys()
+    },
+}

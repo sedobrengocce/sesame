@@ -47,16 +47,20 @@ git clone git@github.com:sedobrengocce/sesame.git
 ```
 2. Build the project
 ```bash
-go build -o sesame main.go
+make build
 ```
-3. Run the project and check the help
+3. Install sesame
+``` bash
+sudo make install
+```
+4. Run the project and check the help
 ```bash
-./sesame -h
+sesame -h
 ```
 
 ## Usage
 ```bash
-./sesame -H <host> -p <ports>
+sesame -H <host> -p <ports>
 ```
 The list of the ports are coma separated. 
 
@@ -66,7 +70,7 @@ The list of the ports are coma separated.
 - [ ] Add a GUI
 - [ ] Add a git integration to sync data
 - [X] Add a fake verbose mode to hide data
-- [ ] Add Makefile to build and install the project
+- [X] Add Makefile to build and install the project
 
 ## License
 This project is licensed under the MIT License
